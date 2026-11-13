@@ -50,7 +50,7 @@ h1{font-size:15px;font-weight:600;letter-spacing:.02em;color:var(--muted);margin
 .result{text-align:center;margin:6px 0 2px}
 .big{font-size:64px;font-weight:300;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .unit{font-size:16px;color:var(--muted);margin-left:4px}
-.pill{display:block;width:100%;margin-top:14px;padding:14px 14px;border-radius:16px;font-weight:600;font-size:40px;line-height:1.15;white-space:nowrap;overflow:hidden;text-align:center;background:var(--n-bg);color:var(--n)}
+.pill{display:block;width:100%;margin-top:14px;padding:16px 14px;border-radius:16px;font-weight:600;font-size:30px;line-height:1.2;white-space:nowrap;overflow:hidden;text-align:center;background:var(--n-bg);color:var(--n)}
 .pill.g{background:var(--g-bg);color:var(--g)} .pill.y{background:var(--y-bg);color:var(--y)} .pill.r{background:var(--r-bg);color:var(--r)}
 .sub{font-size:15px;color:var(--muted);margin-top:6px;text-align:center}
 .controls{display:flex;gap:8px;margin-top:12px}
@@ -195,9 +195,9 @@ const cfg={hr:{gap:2500,win:10,min:4,unit:"slag/min",hint:"Tryck på hjärtat vi
            rr:{gap:12000,win:6,min:3,unit:"andetag/min",hint:"Tryck på lungan vid varje andetag"}};
 
 function fitPill(){
-  const p=$("pill"); p.style.fontSize="44px";
+  const p=$("pill"); p.style.fontSize="30px";
   const w=p.clientWidth-28, sw=p.scrollWidth-28;
-  if(sw>w) p.style.fontSize=Math.max(18,Math.floor(44*w/sw))+"px";
+  if(sw>w) p.style.fontSize=Math.max(18,Math.floor(30*w/sw))+"px";
 }
 window.addEventListener("resize",fitPill);
 const _pill=$("pill"); new MutationObserver(fitPill).observe(_pill,{childList:true,characterData:true,subtree:true});
