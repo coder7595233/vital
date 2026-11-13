@@ -108,11 +108,6 @@ footer a{color:var(--muted)}
   <div class="controls"><button class="btn" id="reset">Nollställ</button></div>
 </div>
 
-<div class="card">
-  <h2 id="tblTitle">Hjärtfrekvens, takykardi</h2>
-  <table id="tbl"></table>
-  <div class="legend" id="legend"></div>
-</div>
 
 <div class="card">
   <h2>Övriga referenser <span id="ageFor"></span></h2>
@@ -171,21 +166,7 @@ function classify(rate){
   }
 }
 
-function renderTable(){
-  const m=ageMonths(); let h="";
-  if(mode==="hr"){
-    $("tblTitle").textContent="Hjärtfrekvens – takykardi";
-    h="<tr><th>Ålder</th><th class='num'>Takykardi</th></tr>";
-    HR.forEach(r=>{h+=`<tr class="${m!==null&&m>=r.lo&&m<r.hi?"cur":""}"><td>${r.lab}</td><td class="num">&gt; ${r.thr}/min</td></tr>`});
-    $("legend").innerHTML=`<span><i class="dot" style="background:var(--g)"></i>≤ gränsen</span><span><i class="dot" style="background:var(--y)"></i>takykardi</span>`;
-  }else{
-    $("tblTitle").textContent="Andningsfrekvens – takypné";
-    h="<tr><th>Ålder</th><th class='num'>Takypné</th><th class='num'>Sjukhus</th></tr>";
-    RR.forEach(r=>{h+=`<tr class="${m!==null&&m>=r.lo&&m<r.hi?"cur":""}"><td>${r.lab}</td><td class="num">&gt; ${r.thr}/min</td><td class="num">&gt; ${r.hosp}/min</td></tr>`});
-    $("legend").innerHTML=`<span><i class="dot" style="background:var(--g)"></i>normal</span><span><i class="dot" style="background:var(--y)"></i>takypné</span><span><i class="dot" style="background:var(--r)"></i>över sjukhusgräns</span>`;
-  }
-  $("tbl").innerHTML=h;
-}
+function renderTable(){}
 
 function renderOther(){
   const m=ageMonths();
