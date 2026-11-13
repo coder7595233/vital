@@ -214,6 +214,7 @@ function show(rate,sub){
 function reset(){
   taps=[]; done=false; clearInterval(timer); timer=null; setArc(0);
   $("val").textContent="–"; show(null);
+  $("hint").style.visibility="visible";
   $("hint").textContent=cfg[mode].hint+(dur?` – klockan startar vid första trycket`:"");
 }
 
@@ -225,12 +226,13 @@ function tick(){
     clearInterval(timer); timer=null; done=true;
     const rate=taps.length*60/dur;
     show(rate); $("sub").textContent=`${taps.length} tryck på ${dur} s`;
-    $("hint").textContent="Klart. Tryck Nollställ för ny mätning";
+    $("hint").textContent="Klart. Tryck Nollställ för ny mätning"; $("hint").style.visibility="visible";
   }
 }
 
 function onTap(e){
   e.preventDefault();
+  $("hint").style.visibility="hidden";
   const b=$("tap"); b.classList.add("beat"); setTimeout(()=>b.classList.remove("beat"),110);
   const now=performance.now(), c=cfg[mode];
   if(dur){
