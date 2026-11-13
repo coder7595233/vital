@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Puls & andning</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Puls & andning">
+<meta name="theme-color" content="#F6F3EE">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --bg:#F6F3EE; --card:#FFFFFF; --ink:#2B2A28; --muted:#7A766F; --line:#E7E2DA;
+  --heart:#C96B63; --lung:#5E8FA8;
+  --g:#4E9A6B; --g-bg:#E5F1E8; --y:#B8892A; --y-bg:#F8EDD3; --r:#B85A54; --r-bg:#F5E1DF;
+  --n:#8A867F; --n-bg:#EEEAE4;
+  --accent:var(--heart);
+}
+body.rr{--accent:var(--lung)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 12px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 24px) calc(env(safe-area-inset-left) + 16px);
+  max-width:520px;margin:0 auto;-webkit-user-select:none;user-select:none}
+h1{font-size:15px;font-weight:600;letter-spacing:.02em;color:var(--muted);margin:4px 0 12px;text-align:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:12px}
+.row{display:flex;align-items:center;gap:10px}
+.age label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
+.age input{font:inherit;font-size:17px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);color:var(--ink);flex:1;min-width:0;-webkit-user-select:text;user-select:text}
+.age .agetxt{font-weight:600;white-space:nowrap}
+.seg{display:flex;background:var(--n-bg);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:transparent;font:inherit;font-size:15px;padding:9px 6px;border-radius:9px;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.seg.small button{font-size:13px;padding:6px 4px}
+.tapzone{display:flex;flex-direction:column;align-items:center;padding:18px 0 8px}
+#tap{position:relative;width:min(62vw,240px);height:min(62vw,240px);border-radius:50%;border:0;cursor:pointer;
+  background:radial-gradient(circle at 50% 40%, #fff 0%, var(--bg) 75%);box-shadow:0 6px 24px rgba(0,0,0,.07), inset 0 0 0 1px var(--line);
+  touch-action:manipulation;display:flex;align-items:center;justify-content:center;padding:0}
+#tap svg.icon{width:56%;height:56%;transition:transform .12s ease-out}
+#tap.beat svg.icon{transform:scale(.88)}
+#ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);pointer-events:none}
+#ring circle{fill:none;stroke-width:5}
+.hint{font-size:13px;color:var(--muted);margin-top:10px;text-align:center;min-height:18px}
+.result{text-align:center;margin:6px 0 2px}
+.big{font-size:64px;font-weight:300;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.unit{font-size:16px;color:var(--muted);margin-left:4px}
+.pill{display:inline-block;margin-top:10px;padding:8px 16px;border-radius:999px;font-weight:600;font-size:15px;background:var(--n-bg);color:var(--n)}
+.pill.g{background:var(--g-bg);color:var(--g)} .pill.y{background:var(--y-bg);color:var(--y)} .pill.r{background:var(--r-bg);color:var(--r)}
+.sub{font-size:13px;color:var(--muted);margin-top:6px;text-align:center}
+.controls{display:flex;gap:8px;margin-top:12px}
+.btn{flex:1;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:2px 0 10px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{font-weight:600;color:var(--muted);font-size:12px}
+tr.cur td{background:var(--n-bg);font-weight:600}
+tr.cur td:first-child{border-radius:8px 0 0 8px} tr.cur td:last-child{border-radius:0 8px 8px 0}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ref{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:14px}
+.ref .k{color:var(--muted)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:10px}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+footer{font-size:12px;color:var(--muted);line-height:1.5;padding:4px 4px 0}
+footer a{color:var(--muted)}
+.hide{display:none}
+</style>
+</head>
+<body>
+<h1>Puls &amp; andning</h1>
+
+<div class="card age">
+  <label for="dob">Födelsedatum</label>
+  <div class="row">
+    <input id="dob" type="date">
+    <span class="agetxt" id="agetxt">–</span>
+  </div>
+</div>
+
+<div class="seg" id="modeSeg" style="margin-bottom:12px">
+  <button data-m="hr" class="on">♥ Puls</button>
+  <button data-m="rr">Andning</button>
+</div>
+
+<div class="card">
+  <div class="seg small" id="timeSeg">
+    <button data-t="0" class="on">Löpande</button>
+    <button data-t="30">30 s</button>
+    <button data-t="60">60 s</button>
+  </div>
+
+  <div class="tapzone">
+    <button id="tap" aria-label="Tryck vid varje slag">
+      <svg id="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" stroke="var(--line)"/><circle id="arc" cx="50" cy="50" r="47" stroke="var(--accent)" stroke-linecap="round" stroke-dasharray="295.3" stroke-dashoffset="295.3"/></svg>
+      <svg class="icon" id="icoHeart" viewBox="0 0 100 100"><path fill="#C96B63" d="M50 88C22 68 8 52 8 34 8 20 19 10 32 10c8 0 14 4 18 10 4-6 10-10 18-10 13 0 24 10 24 24 0 18-14 34-42 54z"/><polyline points="18,48 38,48 43,38 51,62 57,42 61,48 82,48" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <svg class="icon hide" id="icoLung" viewBox="0 0 100 100"><path d="M50 10v34" stroke="#5E8FA8" stroke-width="6" stroke-linecap="round"/><path d="M50 40c-4 0-8 3-11 6M50 40c4 0 8 3 11 6" stroke="#5E8FA8" stroke-width="5" fill="none" stroke-linecap="round"/><path fill="#5E8FA8" d="M39 30c-12 2-26 22-28 44-1 10 5 15 14 13l12-3c4-1 6-4 6-8V36c0-4-1-7-4-6z"/><path fill="#5E8FA8" d="M61 30c12 2 26 22 28 44 1 10-5 15-14 13l-12-3c-4-1-6-4-6-8V36c0-4 1-7 4-6z"/></svg>
+    </button>
+    <div class="hint" id="hint">Tryck på hjärtat vid varje slag</div>
+  </div>
+
+  <div class="result">
+    <span class="big" id="val">–</span><span class="unit" id="unit">slag/min</span>
+    <div><span class="pill" id="pill">Börja trycka</span></div>
+    <div class="sub" id="sub">&nbsp;</div>
+  </div>
+
+  <div class="controls"><button class="btn" id="reset">Nollställ</button></div>
+</div>
+
+<div class="card">
+  <h2 id="tblTitle">Hjärtfrekvens, takykardi</h2>
+  <table id="tbl"></table>
+  <div class="legend" id="legend"></div>
+  <div class="note" id="tblNote"></div>
+</div>
+
+<div class="card">
+  <h2>Övriga referenser <span id="ageFor"></span></h2>
+  <div class="ref" id="other"></div>
+</div>
+
+<footer>
+  Referensvärden: Folkhälsomyndigheten. <a href="https://www.folkhalsomyndigheten.se/contentassets/910ddb6f07964ed9ab162062c2409b9b/bakgrundsdokumentation-tecken-pa-allvarlig-infektion-hos-barn.pdf">Tecken på allvarlig infektion hos barn – bakgrundsdokumentation</a>. 2014. Tabell 5–6 (s. 22, APLS), s. 19–20, 23 och 45–47 (BTS). Stödverktyg, ersätter inte klinisk bedömning.
+</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+let mode=store.get("mode")||"hr";
+let dur=+(store.get("dur")||0);
+let taps=[], timer=null, tStart=0, done=false;
+
+// ---- ålder ----
+function ageMonths(){
+  const v=$("dob").value; if(!v) return null;
+  const b=new Date(v+"T00:00:00"), n=new Date();
+  if(isNaN(b)||b>n) return null;
+  let m=(n.getFullYear()-b.getFullYear())*12+(n.getMonth()-b.getMonth());
+  if(n.getDate()<b.getDate()) m--;
+  return Math.max(0,m);
+}
+function ageDays(){const v=$("dob").value; if(!v) return null; return Math.floor((new Date()-new Date(v+"T00:00:00"))/864e5)}
+function ageText(m){
+  if(m===null) return "–";
+  if(m<1){const d=ageDays(); return d+(d===1?" dag":" dagar")}
+  if(m<24) return m+" mån";
+  const y=Math.floor(m/12), r=m%12; return y+" år"+(r?" "+r+" mån":"");
+}
+
+// ---- referenser ----
+const HR=[ // APLS, Tabell 6
+  {lab:"< 1 år",lo:0,hi:12,thr:160},
+  {lab:"1–2 år",lo:12,hi:36,thr:150},
+  {lab:"3–4 år",lo:36,hi:60,thr:140},
+  {lab:"5–12 år",lo:60,hi:156,thr:120}];
+const RR=[ // APLS Tabell 5 + s. 46 (> 5 år) ; sjukhus BTS s. 45–47
+  {lab:"< 2 mån",lo:0,hi:2,thr:60,hosp:70},
+  {lab:"2–12 mån",lo:2,hi:12,thr:50,hosp:70},
+  {lab:"1–5 år",lo:12,hi:72,thr:40,hosp:50},
+  {lab:"> 5 år",lo:72,hi:216,thr:30,hosp:50}];
+const find=(arr,m)=>m===null?null:arr.find(r=>m>=r.lo&&m<r.hi)||null;
+
+function classify(rate){
+  const m=ageMonths();
+  if(m===null) return {c:"",t:"Ange födelsedatum för referens"};
+  if(mode==="hr"){
+    const r=find(HR,m);
+    if(!r) return {c:"",t:"Referens saknas över 12 år"};
+    return rate>r.thr?{c:"y",t:"Takykardi (> "+r.thr+")"}:{c:"g",t:"Normal – ingen takykardi"};
+  }else{
+    const r=find(RR,m);
+    if(!r) return {c:"",t:"Referens saknas från 18 år"};
+    if(rate>r.hosp) return {c:"r",t:"Mycket hög (> "+r.hosp+")"};
+    if(rate>r.thr) return {c:"y",t:"Takypné (> "+r.thr+")"};
+    return {c:"g",t:"Normal – ingen takypné"};
+  }
+}
+
+function renderTable(){
+  const m=ageMonths(); let h="";
+  if(mode==="hr"){
+    $("tblTitle").textContent="Hjärtfrekvens – takykardi";
+    h="<tr><th>Ålder</th><th class='num'>Takykardi</th></tr>";
+    HR.forEach(r=>{h+=`<tr class="${m!==null&&m>=r.lo&&m<r.hi?"cur":""}"><td>${r.lab}</td><td class="num">&gt; ${r.thr}/min</td></tr>`});
+    $("legend").innerHTML=`<span><i class="dot" style="background:var(--g)"></i>≤ gränsen</span><span><i class="dot" style="background:var(--y)"></i>takykardi</span>`;
+    $("tblNote").textContent="APLS (Tabell 6). Räkna när barnet är lugnt och använd det lägsta värdet; feber höjer pulsen, och efter korrektion för feber var takykardi ett svagt tecken på allvarlig infektion. Inga värden över 12 år i dokumentet.";
+  }else{
+    $("tblTitle").textContent="Andningsfrekvens – takypné";
+    h="<tr><th>Ålder</th><th class='num'>Takypné</th><th class='num'>Sjukhus</th></tr>";
+    RR.forEach(r=>{h+=`<tr class="${m!==null&&m>=r.lo&&m<r.hi?"cur":""}"><td>${r.lab}</td><td class="num">&gt; ${r.thr}/min</td><td class="num">&gt; ${r.hosp}/min</td></tr>`});
+    $("legend").innerHTML=`<span><i class="dot" style="background:var(--g)"></i>normal</span><span><i class="dot" style="background:var(--y)"></i>takypné</span><span><i class="dot" style="background:var(--r)"></i>över sjukhusgräns</span>`;
+    $("tblNote").textContent="Takypné: APLS (Tabell 5) och gränsen > 30/min över 5 år för telefonrådgivning (s. 46). Sjukhus: > 70/min under 1 år, > 50/min över 1 år (BTS, s. 45–47). Från 6 år: bedöm även om andningen är tung.";
+  }
+  $("tbl").innerHTML=h;
+}
+
+function renderOther(){
+  const m=ageMonths(), d=ageDays();
+  $("ageFor").textContent=m===null?"":"· "+ageText(m);
+  let site="–";
+  if(m!==null){ site = d<28?"Axillärt (< 4 veckor)": m<12?"Rektalt (4 veckor–1 år)":"Örat (> 1 år)"; }
+  let fever="≥ 38,0 °C";
+  let ageFever="";
+  if(m!==null&&m<3) ageFever="< 3 mån: ≥ 38,0 °C → oftast till sjukhus";
+  else if(m!==null&&m<6) ageFever="3–6 mån: ≥ 39,0 °C → oftast till sjukhus";
+  const hr=find(HR,m), rr=find(RR,m);
+  const rows=[
+    ["Puls", hr?`takykardi &gt; ${hr.thr}/min`:(m===null?"ange ålder":"inget värde i dokumentet")],
+    ["Andning", rr?`takypné &gt; ${rr.thr}/min · sjukhus &gt; ${rr.hosp}/min`:(m===null?"ange ålder":"inget värde i dokumentet")],
+    ["Feber", fever+(ageFever?"<br>"+ageFever:"")],
+    ["Temp, alla åldrar", "&gt; 41,0 °C eller &lt; 36,0 °C → oftast till sjukhus"],
+    ["Mätställe", site],
+    ["Saturation", "normalt ≥ 95 %<br>≤ 92 % → sjukhus med syrgas under transport"],
+    ["Kapillär återfyllnad", "normalt &lt; 3 s; ≥ 3 s vid dehydrering eller chock"]
+  ];
+  $("other").innerHTML=rows.map(r=>`<div class="k">${r[0]}</div><div>${r[1]}</div>`).join("");
+}
+
+// ---- räkning ----
+const cfg={hr:{gap:2500,win:10,min:4,unit:"slag/min",hint:"Tryck på hjärtat vid varje slag"},
+           rr:{gap:12000,win:6,min:3,unit:"andetag/min",hint:"Tryck på lungan vid varje andetag"}};
+
+function setArc(f){$("arc").setAttribute("stroke-dashoffset",(295.3*(1-f)).toFixed(1))}
+
+function show(rate,sub){
+  $("val").textContent=rate===null?"–":Math.round(rate);
+  const p=$("pill");
+  if(rate===null){p.className="pill";p.textContent=sub||"Börja trycka";$("sub").innerHTML="&nbsp;";return}
+  const k=classify(rate); p.className="pill "+k.c; p.textContent=k.t;
+}
+
+function reset(){
+  taps=[]; done=false; clearInterval(timer); timer=null; setArc(0);
+  $("val").textContent="–"; show(null);
+  $("hint").textContent=cfg[mode].hint+(dur?` – klockan startar vid första trycket`:"");
+}
+
+function tick(){
+  const el=(performance.now()-tStart)/1000;
+  setArc(Math.min(1,el/dur));
+  $("sub").textContent=`${taps.length} tryck · ${Math.max(0,Math.ceil(dur-el))} s kvar`;
+  if(el>=dur){
+    clearInterval(timer); timer=null; done=true;
+    const rate=taps.length*60/dur;
+    show(rate); $("sub").textContent=`${taps.length} tryck på ${dur} s`;
+    $("hint").textContent="Klart. Tryck Nollställ för ny mätning";
+  }
+}
+
+function onTap(e){
+  e.preventDefault();
+  const b=$("tap"); b.classList.add("beat"); setTimeout(()=>b.classList.remove("beat"),110);
+  const now=performance.now(), c=cfg[mode];
+  if(dur){
+    if(done) return;
+    if(!timer){taps=[];tStart=now;timer=setInterval(tick,100)}
+    taps.push(now); $("val").textContent=taps.length; tick();
+    $("pill").className="pill"; $("pill").textContent="Räknar…";
+    $("val").textContent=taps.length;
+    return;
+  }
+  if(taps.length&&now-taps[taps.length-1]>c.gap) taps=[];
+  taps.push(now); if(taps.length>c.win+1) taps.shift();
+  if(taps.length<c.min){
+    $("val").textContent="–"; show(null,`Fortsätt … ${c.min-taps.length} till`);
+    $("sub").innerHTML="&nbsp;";
+  }else{
+    const rate=60000*(taps.length-1)/(taps[taps.length-1]-taps[0]);
+    show(rate); $("sub").textContent=`medel av ${taps.length-1} intervall`;
+  }
+  setArc(dur?0:Math.min(1,taps.length/(c.win+1)));
+}
+
+function setMode(m){
+  mode=m; store.set("mode",m);
+  document.body.classList.toggle("rr",m==="rr");
+  [...$("modeSeg").children].forEach(b=>b.classList.toggle("on",b.dataset.m===m));
+  $("icoHeart").classList.toggle("hide",m!=="hr"); $("icoLung").classList.toggle("hide",m!=="rr");
+  $("unit").textContent=cfg[m].unit;
+  renderTable(); reset();
+}
+function setDur(t){
+  dur=t; store.set("dur",t);
+  [...$("timeSeg").children].forEach(b=>b.classList.toggle("on",+b.dataset.t===t));
+  reset();
+}
+
+$("tap").addEventListener("pointerdown",onTap);
+$("tap").addEventListener("click",e=>e.preventDefault());
+$("reset").addEventListener("click",reset);
+$("modeSeg").addEventListener("click",e=>{const b=e.target.closest("button"); if(b) setMode(b.dataset.m)});
+$("timeSeg").addEventListener("click",e=>{const b=e.target.closest("button"); if(b) setDur(+b.dataset.t)});
+$("dob").max=new Date().toISOString().slice(0,10);
+$("dob").addEventListener("change",()=>{
+  store.set("dob",$("dob").value);
+  $("agetxt").textContent=ageText(ageMonths());
+  renderTable(); renderOther();
+  if(taps.length>=cfg[mode].min&&!dur){const rate=60000*(taps.length-1)/(taps[taps.length-1]-taps[0]); show(rate)}
+});
+
+const saved=store.get("dob"); if(saved) $("dob").value=saved;
+$("agetxt").textContent=ageText(ageMonths());
+renderOther(); setDur(dur); setMode(mode);
+})();
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}}
+</script>
+</body>
+</html>
